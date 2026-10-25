@@ -1,0 +1,49 @@
+# ============================================================
+# CODEOWNERS — quản lý công việc cá nhân nhóm 8
+# ============================================================
+
+# Mặc định: trưởng nhóm review mọi thay đổi
+*@nguyenminhkhue12102005@gmail.com
+
+ ỨNG DỤNG QUẢN LÝ CÔNG VIỆC CÁ NHÂN (TASKFLOW)
+# Quy mô nhóm: 02 thành viên
+# Member 1 (Trưởng nhóm): @nguyenminhkhue
+# Member 2 (Thành viên):  @nhungg238h@gmail.com
+# ==============================================================================
+ ỨNG DỤNG QUẢN LÝ CÔNG VIỆC CÁ NHÂN (TASKFLOW)
+# Quy mô nhóm: 02 thành viên
+# Member 1 (Trưởng nhóm): @nguyenminhkhue
+# Member 2 (Thành viên):  @nhungg238h@gmail.com
+# ==============================================================================
+
+# ---------- Cấu hình chung & Khung điều hướng (Trưởng nhóm) ----------
+/index.html @nguyenminhkhue12102005@gmail.com
+/app.html @nguyenminhkhue12102005@gmail.com
+/package.json @nguyenminhkhue12102005@gmail.com
+/vite.config.ts @nguyenminhkhue12102005@gmail.com
+/tsconfig.json @nguyenminhkhue12102005@gmail.com
+/README.md @nguyenminhkhue12102005@gmail.com
+/src/main.tsx @nguyenminhkhue12102005@gmail.com
+/src/App.tsx @nguyenminhkhue12102005@gmail.com
+/src/index.css @nguyenminhkhue12102005@gmail.com
+/src/components/Navbar.tsx @nguyenminhkhue12102005@gmail.com
+
+# ---------- Giao diện Việc Hôm Nay & Ma Trận Eisenhower (Trưởng nhóm) ----------
+/src/components/TodayView.tsx @nguyenminhkhue12102005@gmail.com
+/src/components/EisenhowerView.tsx @nguyenminhkhue12102005@gmail.com
+/src/components/TaskModal.tsx @nguyenminhkhue12102005@gmail.com
+/src/components/LightboxModal.tsx @nguyenminhkhue12102005@gmail.com
+
+# ---------- Tiến Độ Kanban, Thói Quen & Pomodoro  ----------
+/src/components/KanbanView.tsx @nhungg238h@gmail.com
+/src/components/HabitsView.tsx @nhungg238h@gmail.com
+/src/components/PomodoroTimer.tsx @nhungg238h@gmail.com
+
+# ---------- Cơ Sở Dữ Liệu, Lưu Trữ & Logic Nghiệp Vụ ----------
+/src/db/database.ts @nhungg238h@gmail.com
+/src/components/DatabaseModal.tsx @nhungg238h@gmail.com
+/src/types/index.ts @nhungg238h@gmail.com
+/src/utils/formatters.ts @nhungg238h@gmail.com
+/src/assets/ @nhungg238h@gmail.com
+
+
