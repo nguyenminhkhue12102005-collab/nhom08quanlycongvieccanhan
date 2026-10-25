@@ -1,0 +1,416 @@
+{
+  "name": "taskflow-personal-manager",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port=3000 --host=0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "^6.1.1",
+    "lucide-react": "^0.546.0",
+    "motion": "^12.23.24",
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1",
+    "vite": "^8.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2"
+  }
+}
+import tailwindcss from '@tailwindcss/vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+import { defineConfig } from 'vite';
+
+export default defineConfig(() => {
+  return {
+    base: './', // Đảm bảo chạy mượt trên GitHub Pages
+    plugins: [react(), tailwindcss()],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, '.'),
+      },
+    },
+    server: {
+      hmr: process.env.DISABLE_HMR !== 'true',
+      watch: process.env.DISABLE_HMR === 'true' ? null : {},
+    },
+  };
+});
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "types": ["vite/client"],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "jsx": "react-jsx",
+    "paths": {
+      "@/*": ["./*"]
+    },
+    "allowImportingTsExtensions": true,
+    "noEmit": true
+  },
+  "exclude": ["dist", "node_modules"]
+}
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TaskFlow - Quản Lý Công Việc & Năng Suất Cá Nhân</title>
+    <meta name="description" content="Ứng dụng quản lý công việc và năng suất cá nhân: Hôm nay, Kanban, Ma trận Eisenhower, Thói quen và Pomodoro." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  </head>
+  <body class="bg-slate-50 text-slate-900 antialiased font-sans">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+import { createRoot } from 'react-dom/client';
+import App from './App.tsx';
+import './index.css';
+
+createRoot(document.getElementById('root')!).render(<App />);
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #0f172a;
+    background-color: #f8fafc;
+  }
+
+  code, kbd, samp, pre, .font-mono, .tabular-nums {
+    font-family: 'JetBrains Mono', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+import React from 'react';
+import { Plus, Database, CheckSquare } from 'lucide-react';
+
+export type ActiveTab = 'today' | 'kanban' | 'eisenhower' | 'habits' | 'pomodoro';
+
+interface NavbarProps {
+  activeTab: ActiveTab;
+  setActiveTab: (tab: ActiveTab) => void;
+  onOpenNewTask: () => void;
+  onOpenDatabaseModal: () => void;
+  pendingCount: number;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({
+  activeTab,
+  setActiveTab,
+  onOpenNewTask,
+  onOpenDatabaseModal,
+  pendingCount,
+}) => {
+  return (
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-8 px-4 sm:px-6 py-3.5">
+        <div className="flex items-center gap-2.5 shrink-0">
+          <button
+            onClick={() => setActiveTab('today')}
+            className="flex items-center gap-2 text-left group focus:outline-none"
+          >
+            <div className="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold shadow-xs">
+              <CheckSquare className="w-4 h-4 text-emerald-400" />
+            </div>
+            <span className="text-lg font-bold tracking-tight text-slate-900 whitespace-nowrap shrink-0">
+              TaskFlow
+            </span>
+          </button>
+        </div>
+
+        <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+          <button
+            onClick={() => setActiveTab('today')}
+            className={`transition-colors whitespace-nowrap shrink-0 py-1 flex items-center gap-1.5 ${
+              activeTab === 'today'
+                ? 'text-slate-950 font-semibold border-b-2 border-slate-900'
+                : 'hover:text-slate-900'
+            }`}
+          >
+            <span>Hôm Nay</span>
+            {pendingCount > 0 && (
+              <span className="text-[10px] font-bold bg-slate-100 text-slate-700 px-1.5 py-0.2 rounded-full tabular-nums">
+                {pendingCount}
+              </span>
+            )}
+          </button>
+
+          <button
+            onClick={() => setActiveTab('kanban')}
+            className={`transition-colors whitespace-nowrap shrink-0 py-1 ${
+              activeTab === 'kanban'
+                ? 'text-slate-950 font-semibold border-b-2 border-slate-900'
+                : 'hover:text-slate-900'
+            }`}
+          >
+            Bảng Kanban
+          </button>
+
+          <button
+            onClick={() => setActiveTab('eisenhower')}
+            className={`transition-colors whitespace-nowrap shrink-0 py-1 ${
+              activeTab === 'eisenhower'
+                ? 'text-slate-950 font-semibold border-b-2 border-slate-900'
+                : 'hover:text-slate-900'
+            }`}
+          >
+            Ma Trận Eisenhower
+          </button>
+
+          <button
+            onClick={() => setActiveTab('habits')}
+            className={`transition-colors whitespace-nowrap shrink-0 py-1 ${
+              activeTab === 'habits'
+                ? 'text-slate-950 font-semibold border-b-2 border-slate-900'
+                : 'hover:text-slate-900'
+            }`}
+          >
+            Thói Quen
+          </button>
+
+          <button
+            onClick={() => setActiveTab('pomodoro')}
+            className={`transition-colors whitespace-nowrap shrink-0 py-1 ${
+              activeTab === 'pomodoro'
+                ? 'text-slate-950 font-semibold border-b-2 border-slate-900'
+                : 'hover:text-slate-900'
+            }`}
+          >
+            Tập Trung Pomodoro
+          </button>
+        </nav>
+
+        <div className="flex items-center gap-2.5 shrink-0">
+          <button
+            onClick={onOpenDatabaseModal}
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors whitespace-nowrap shrink-0"
+          >
+            <Database className="w-3.5 h-3.5 text-slate-500" />
+            <span>CSDL & Chrome</span>
+          </button>
+
+          <button
+            onClick={onOpenNewTask}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition-colors whitespace-nowrap shrink-0 shadow-xs"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Việc Mới</span>
+          </button>
+        </div>
+      </div>
+    </header>
+  );
+};
+import React, { useState, useEffect } from 'react';
+import { personalDb } from './db/database';
+import { EisenhowerPriority, PersonalDatabase, PersonalTask, TaskStatus } from './types';
+import { ActiveTab, Navbar } from './components/Navbar';
+import { TodayView } from './components/TodayView';
+import { KanbanView } from './components/KanbanView';
+import { EisenhowerView } from './components/EisenhowerView';
+import { HabitsView } from './components/HabitsView';
+import { PomodoroTimer } from './components/PomodoroTimer';
+import { TaskModal } from './components/TaskModal';
+import { DatabaseModal } from './components/DatabaseModal';
+import { LightboxModal } from './components/LightboxModal';
+
+export default function App() {
+  const [db, setDb] = useState<PersonalDatabase>(() => personalDb.getSnapshot());
+  const [activeTab, setActiveTab] = useState<ActiveTab>('today');
+
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [taskToEdit, setTaskToEdit] = useState<PersonalTask | null>(null);
+  const [isDatabaseModalOpen, setIsDatabaseModalOpen] = useState(false);
+  const [activeLightboxUrl, setActiveLightboxUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = personalDb.subscribe(() => {
+      setDb({ ...personalDb.getSnapshot() });
+    });
+    return unsubscribe;
+  }, []);
+
+  const handleOpenTaskModal = (task?: PersonalTask) => {
+    setTaskToEdit(task || null);
+    setIsTaskModalOpen(true);
+  };
+
+  const handleSaveTask = (task: PersonalTask) => {
+    personalDb.saveTask(task);
+  };
+
+  const handleDeleteTask = (taskId: string) => {
+    personalDb.deleteTask(taskId);
+  };
+
+  const handleToggleStatus = (taskId: string) => {
+    personalDb.toggleTaskStatus(taskId);
+  };
+
+  const handleUpdateStatus = (taskId: string, status: TaskStatus) => {
+    personalDb.updateTaskStatus(taskId, status);
+  };
+
+  const handleToggleStar = (taskId: string) => {
+    personalDb.toggleStarTask(taskId);
+  };
+
+  const handleToggleSubtask = (taskId: string, subtaskId: string) => {
+    personalDb.toggleSubtask(taskId, subtaskId);
+  };
+
+  const handleUpdatePriority = (taskId: string, priority: EisenhowerPriority) => {
+    personalDb.updateTaskPriority(taskId, priority);
+  };
+
+  const handleQuickAddTask = (title: string, categoryId: string) => {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const newTask: PersonalTask = {
+      id: `task-${Date.now()}`,
+      title,
+      categoryId,
+      status: 'todo',
+      priority: 'urgent_important',
+      dueDate: todayStr,
+      isStarred: false,
+      subtasks: [],
+      notes: '',
+      imageUrls: [],
+      estimatedMinutes: 30,
+      tags: [],
+      createdAt: new Date().toISOString(),
+    };
+    personalDb.saveTask(newTask);
+  };
+
+  const pendingTasksCount = db.tasks.filter((t) => t.status !== 'completed').length;
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-900 selection:bg-blue-100 selection:text-blue-900">
+      <Navbar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onOpenNewTask={() => handleOpenTaskModal()}
+        onOpenDatabaseModal={() => setIsDatabaseModalOpen(true)}
+        pendingCount={pendingTasksCount}
+      />
+
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
+        {activeTab === 'today' && (
+          <TodayView
+            tasks={db.tasks}
+            categories={db.categories}
+            habits={db.habits}
+            onToggleStatus={handleToggleStatus}
+            onToggleStar={handleToggleStar}
+            onToggleSubtask={handleToggleSubtask}
+            onQuickAddTask={handleQuickAddTask}
+            onOpenTaskModal={handleOpenTaskModal}
+            onDeleteTask={handleDeleteTask}
+            onToggleHabitToday={(id) => personalDb.toggleHabitToday(id)}
+            onViewPhoto={(url) => setActiveLightboxUrl(url)}
+            onNavigateToTab={(tab) => setActiveTab(tab)}
+          />
+        )}
+
+        {activeTab === 'kanban' && (
+          <KanbanView
+            tasks={db.tasks}
+            categories={db.categories}
+            onToggleStatus={handleToggleStatus}
+            onUpdateStatus={handleUpdateStatus}
+            onToggleSubtask={handleToggleSubtask}
+            onOpenTaskModal={handleOpenTaskModal}
+            onDeleteTask={handleDeleteTask}
+            onViewPhoto={(url) => setActiveLightboxUrl(url)}
+          />
+        )}
+
+        {activeTab === 'eisenhower' && (
+          <EisenhowerView
+            tasks={db.tasks}
+            categories={db.categories}
+            onToggleStatus={handleToggleStatus}
+            onUpdatePriority={handleUpdatePriority}
+            onOpenTaskModal={handleOpenTaskModal}
+            onViewPhoto={(url) => setActiveLightboxUrl(url)}
+          />
+        )}
+
+        {activeTab === 'habits' && (
+          <HabitsView
+            habits={db.habits}
+            onToggleHabitToday={(id) => personalDb.toggleHabitToday(id)}
+            onSaveHabit={(h) => personalDb.saveHabit(h)}
+            onDeleteHabit={(id) => personalDb.deleteHabit(id)}
+          />
+        )}
+
+        {activeTab === 'pomodoro' && (
+          <div className="space-y-4">
+            <div className="text-center max-w-md mx-auto space-y-1">
+              <h2 className="text-lg font-bold text-slate-900">Đồng Hồ Tập Trung Pomodoro</h2>
+              <p className="text-xs text-slate-500">25 phút làm việc + 5 phút nghỉ ngơi</p>
+            </div>
+            <PomodoroTimer tasks={db.tasks} onCompleteTask={handleToggleStatus} />
+          </div>
+        )}
+      </main>
+
+      <TaskModal
+        isOpen={isTaskModalOpen}
+        onClose={() => setIsTaskModalOpen(false)}
+        onSave={handleSaveTask}
+        taskToEdit={taskToEdit}
+        categories={db.categories}
+      />
+
+      <DatabaseModal
+        isOpen={isDatabaseModalOpen}
+        onClose={() => setIsDatabaseModalOpen(false)}
+        onExport={() => {}}
+        onImport={() => ({ success: true, message: '' })}
+        onReset={() => personalDb.resetDatabase()}
+      />
+
+      <LightboxModal
+        imageUrl={activeLightboxUrl}
+        onClose={() => setActiveLightboxUrl(null)}
+      />
+    </div>
+  );
+}
